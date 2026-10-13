@@ -38,6 +38,8 @@ const packages = [
   "fontconfig-devel",
   "openssl-devel",
   "libcurl-devel",
+  // iconv needs this package for non-Western ebook encodings (e.g. CP1251 and CP932)
+  "glibc-gconv-extra",
   // the WSL image ships no fonts; GPUI falls back to these
   "dejavu-sans-fonts",
   "dejavu-sans-mono-fonts",

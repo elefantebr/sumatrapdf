@@ -1,0 +1,51 @@
+diff --git a/cmd/helper/ng-fedora.ts b/cmd/helper/ng-fedora.ts
+index 9f029e3..63a13ab 100644
+--- a/cmd/helper/ng-fedora.ts
++++ b/cmd/helper/ng-fedora.ts
+@@ -38,6 +38,8 @@ const packages = [
+   "fontconfig-devel",
+   "openssl-devel",
+   "libcurl-devel",
++  // iconv needs this package for non-Western ebook encodings (e.g. CP1251 and CP932)
++  "glibc-gconv-extra",
+   // the WSL image ships no fonts; GPUI falls back to these
+   "dejavu-sans-fonts",
+   "dejavu-sans-mono-fonts",
+diff --git a/docs/test/SumatraPDF-settings.txt b/docs/test/SumatraPDF-settings.txt
+index 068a975..260c280 100644
+--- a/docs/test/SumatraPDF-settings.txt
++++ b/docs/test/SumatraPDF-settings.txt
+@@ -172,6 +172,13 @@ AntiGravity [
+ 	BgColor = #ffffff
+ ]
+ 
++AIChat [
++	FontSize = 0
++	LineSpacing = 0
++	MessagePadding = -1
++	Bubbles = true
++]
++
+ AIChatSidebarDx = 0
+ 
+ 
+diff --git a/src/ng/SumatraControl.cpp b/src/ng/SumatraControl.cpp
+index dcfdff0..e215a9d 100644
+--- a/src/ng/SumatraControl.cpp
++++ b/src/ng/SumatraControl.cpp
+@@ -1323,12 +1323,12 @@ TempStr ImageOrientationResultTemp(Str pdfPath, int pageNo, int* exitCodeOut) {
+         SafeEngineRelease(&engine);
+         return fail(StrL("ERROR no-image-element"));
+     }
+-    Pixmap* px = nullptr;
+-#if OS_WIN
+-    RenderedBitmap* bmp = engine->GetImageForPageElement(imgEl);
+     Str origData = engine->GetImageDataForPageElement(imgEl);
+     int dataLen = len(origData);
+     str::Free(origData);
++    Pixmap* px = nullptr;
++#if OS_WIN
++    RenderedBitmap* bmp = engine->GetImageForPageElement(imgEl);
+     SafeEngineRelease(&engine);
+     if (!bmp) {
+         return fail(StrL("ERROR no-image"));
